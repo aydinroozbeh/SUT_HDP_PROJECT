@@ -20,8 +20,7 @@ def init_network(num_agents, topology_type='ring'):
             A[i, (i-1)%num_agents] = 1/3
             A[i, (i+1)%num_agents] = 1/3
         return A
-    # Ayroz: add 'star' for centralized optimization
-    # Placeholder for other topologies
+    # ayroz: Placeholder for other topologies: Fully connected for Federated Learning
     return np.eye(num_agents)
 
 def projection(x, radius):
@@ -31,7 +30,7 @@ def projection(x, radius):
     """
     norm = np.linalg.norm(x)
     if norm > radius:
-        return x * (radius / norm)
+        return x * (radius / norm) # ayroz: scaling back to the unit ball/cube
     return x
 
 def main():
@@ -52,7 +51,10 @@ def main():
     # Load Data Source
     # Returns a function: get_gradient(agent_id, params)
     get_gradient_batch = dataset_loader.load_data(config.DATASET_NAME)
-    
+
+    # Load Loss Function
+    get_loss_func = dataset_loader.load_loss_func(config.DATASET_NAME)
+
     # Load Clipping Method
     # Returns a function: clip(g, threshold, state) -> (g_new, state_new)
     clip_gradient = clipping_methods.get_clipping_function(config.CLIPPING_METHOD)
@@ -113,17 +115,28 @@ def main():
 
         # --- Monitoring ---
         if k % 100 == 0:
-            # Simple metric: mean parameter norm (or distance to optimum if known)
+            # 1. Calculate Global Loss (Average of all agents)
+            total_loss = 0.0
+            for i in range(config.NUM_AGENTS):
+                total_loss += get_loss_func(agent_id=i, params=X[i])
+            avg_loss = total_loss / config.NUM_AGENTS
+            
+            loss_history.append(avg_loss)
+            
+            # Optional: Still track param norm if you want debug info
             avg_norm = np.mean(np.linalg.norm(X, axis=1))
-            loss_history.append(avg_norm)
-            print(f"Iter {k}: Alpha={alpha_k:.4f}, Tau={tau_k:.2f}, Avg Param Norm={avg_norm:.4f}")
-
+            
+            print(f"Iter {k}: Alpha={alpha_k:.4f}, Tau={tau_k:.2f}, Loss={avg_loss:.4f}, Norm={avg_norm:.2f}")
+    
     # --- 3. Results ---
     print("Optimization Finished.")
-    plt.plot(loss_history)
-    plt.title(f"Convergence: {config.CLIPPING_METHOD}")
+    plt.figure(figsize=(10, 6))
+    plt.plot(loss_history, linewidth=2)
+    plt.title(f"Convergence: {config.CLIPPING_METHOD} ({config.DATASET_NAME})")
     plt.xlabel("Iterations (x100)")
-    plt.ylabel("Avg Parameter Norm")
+    plt.ylabel("Global Loss (Error)")
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.yscale('log')  # Log scale usually looks better for convergence
     plt.show()
 
 if __name__ == "__main__":

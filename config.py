@@ -24,6 +24,9 @@ ALPHA_EXP = 0.9           # a (0.9 satisfies the condition)
 TAU_BASE = 5.0            # d
 TAU_EXP = 0.3             # b (0.3 < 0.9 - 0.5, satisfies the condition)
 
+
+# ayroz: these functions are currently designed for the original paper, 
+# ayroz: I would probably change them into modules later
 def get_step_size(k):
     """Calculates alpha_k for iteration k."""
     return ALPHA_BASE / ((k + 1) ** ALPHA_EXP)

@@ -50,6 +50,14 @@ def load_data(dataset_name):
     else:
         raise ValueError(f"Unknown dataset: {dataset_name}")
 
+def load_loss_func(dataset_name):
+
+    """Returns the loss calculation function for the current dataset."""
+    if _DATA_CONTEXT is None:
+        # Ensure data is loaded if this is called before load_data
+        load_data(dataset_name) 
+    return _DATA_CONTEXT.get_loss
+
 # ==============================================================================
 # 1. Synthetic Linear Regression (Already implemented)
 # ==============================================================================
@@ -70,6 +78,13 @@ class SyntheticLinearRegression:
         errors = np.dot(A_i, params) - b_i
         grad = (2.0 / len(b_i)) * np.dot(A_i.T, errors)
         return grad
+    
+    def get_loss(self, agent_id, params):
+        """Calculates Mean Squared Error (MSE)"""
+        A_i, b_i = self.agent_data[agent_id]
+        predictions = np.dot(A_i, params)
+        errors = predictions - b_i
+        return np.mean(errors**2)
 
 # ==============================================================================
 # 2. LIBSVM Classification (Logistic Regression)
@@ -148,3 +163,14 @@ class LibSVMClassification:
         grad = (grad_sum / m) + (LAMBDA * params)
         
         return grad
+    
+    def get_loss(self, agent_id, params):
+        """Calculates Logistic Loss + L2 Regularization"""
+        X_i, y_i = self.agent_data[agent_id]
+        # Robust log-sum-exp for log(1 + exp(-y * score))
+        scores = y_i * np.dot(X_i, params)
+        loss_val = np.logaddexp(0, -scores)
+        
+        # Add Regularization (Lambda = 0.001) matching the gradient function
+        reg_loss = (0.001 / 2) * np.sum(params**2)
+        return np.mean(loss_val) + reg_loss
