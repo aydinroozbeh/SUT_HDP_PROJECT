@@ -3,4 +3,5 @@ run these commands:
 
 => python -m venv hdp_dev
 => source ./hdp_dev/bin/activate
-=> 
+=> pip install -r requirements.txt
+=> python main.py
