@@ -62,6 +62,10 @@ def main():
     # Metrics tracking
     loss_history = []
     
+
+    # SHAYAN: add SLSQP for finding the actuall optimum (without noise)
+    # SHAYAN: add figure for log10( (f(y_k) - f(y*)) / (f(y_0) - f(y*)) )
+
     print(f"Starting Optimization Loop using method: {config.CLIPPING_METHOD}...")
 
     # --- 2. Main Optimization Loop ---

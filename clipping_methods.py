@@ -18,7 +18,6 @@ def get_clipping_function(method_name):
 
 # ==============================================================================
 # 1. BASELINE: Standard Dynamic Norm Clipping
-# ==============================================================================
 def standard_dynamic_clip(g, threshold, state=None):
     """
     Implements the standard clipping from 'Distributed Stochastic Optimization 
@@ -45,9 +44,10 @@ def standard_dynamic_clip(g, threshold, state=None):
     clipped_g = g * scale
     return clipped_g, state
 
+
+# ERFAN: Do not fill this part yet, just look for existing methods
 # ==============================================================================
 # 2. INNOVATION 1: Global-Adaptive Coordinate-wise Clipping (G-ACC)
-# ==============================================================================
 def global_adaptive_clip(g, threshold, state=None):
     """
     Implements Adaptive Coordinate-wise Clipping.
@@ -99,7 +99,6 @@ def global_adaptive_clip(g, threshold, state=None):
 
 # ==============================================================================
 # 3. INNOVATION 2: Soft-BiClip (Smooth Garden Shaping)
-# ==============================================================================
 def soft_biclip(g, threshold, state=None):
     """
     Implements 'Soft-BiClip' - a differentiable shaping function.

@@ -60,7 +60,6 @@ def load_loss_func(dataset_name):
 
 # ==============================================================================
 # 1. Synthetic Linear Regression (Already implemented)
-# ==============================================================================
 class SyntheticLinearRegression:
     def __init__(self, num_agents, dimension, samples_per_agent):
         self.true_weights = np.random.randn(dimension)
@@ -88,7 +87,6 @@ class SyntheticLinearRegression:
 
 # ==============================================================================
 # 2. LIBSVM Classification (Logistic Regression)
-# ==============================================================================
 class LibSVMClassification:
     """
     Handles Binary Classification using Logistic Regression on LIBSVM data.
@@ -174,3 +172,9 @@ class LibSVMClassification:
         # Add Regularization (Lambda = 0.001) matching the gradient function
         reg_loss = (0.001 / 2) * np.sum(params**2)
         return np.mean(loss_val) + reg_loss
+
+# ==============================================================================
+# SHAYAN:
+
+# 3. mu-strongly convex
+# 4. non-convex function    
